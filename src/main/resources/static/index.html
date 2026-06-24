@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaLang Web — Online IDE & Live REPL</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    
+    <!-- CodeMirror 5 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+    
+    <!-- xterm.css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@4.19.0/css/xterm.css">
+    
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="stars-bg"></div>
+    <div class="glowing-orb orb-1"></div>
+    <div class="glowing-orb orb-2"></div>
+
+    <header class="app-header">
+        <div class="logo-area">
+            <span class="logo-icon">&lt;/&gt;</span>
+            <h1 class="logo-text">Nova<span class="gradient-text">Lang</span><span class="version-tag">web</span></h1>
+        </div>
+        <nav class="tab-navigation">
+            <button id="tab-btn-ide" class="tab-btn active" data-tab="tab-ide">
+                <svg class="tab-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12.89 3L14.85 3.4L11.11 21L9.15 20.6L12.89 3M19.59 12L16 8.41V5.58L22.42 12L16 18.41V15.58L19.59 12M4.41 12L8 15.58V18.41L1.58 12L8 5.58V8.41L4.41 12Z"/></svg>
+                IDE Editor
+            </button>
+            <button id="tab-btn-repl" class="tab-btn" data-tab="tab-repl">
+                <svg class="tab-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M20,19V7H4V19H20M20,3A2,2 0 0,1 22,5V19A2,2 0 0,1 20,21H4A2,2 0 0,1 2,19V5C2,3.89 2.9,3 4,3H20M13,17V15H18V17H13M9.58,13L5.57,9H8.4L11.7,12.3C12.09,12.7 12.09,13.3 11.7,13.7L8.4,17H5.57L9.58,13Z"/></svg>
+                Terminal REPL
+            </button>
+        </nav>
+        <div class="header-status">
+            <span class="status-indicator online"></span>
+            <span class="status-label">Engine Ready</span>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <!-- IDE Tab Pane -->
+        <section id="tab-ide" class="tab-content active">
+            <div class="ide-container">
+                <!-- Examples Sidebar -->
+                <aside class="sidebar">
+                    <h2 class="sidebar-title">Example Programs</h2>
+                    <div id="examples-list" class="examples-grid">
+                        <div class="skeleton-card"></div>
+                        <div class="skeleton-card"></div>
+                        <div class="skeleton-card"></div>
+                    </div>
+                </aside>
+
+                <!-- Workspace Area -->
+                <div class="workspace">
+                    <div class="editor-pane glass-panel">
+                        <div class="panel-header">
+                            <span class="panel-title">main.nova</span>
+                            <div class="editor-actions">
+                                <button id="btn-validate" class="btn btn-secondary">
+                                    Validate Syntax
+                                </button>
+                                <button id="btn-run" class="btn btn-primary">
+                                    <svg class="run-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M8,5.14V19.14L19,12.14L8,5.14Z"/></svg>
+                                    Run Code
+                                </button>
+                            </div>
+                        </div>
+                        <div class="editor-wrapper">
+                            <textarea id="code-editor"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="output-pane glass-panel">
+                        <div class="panel-header">
+                            <span class="panel-title">Console Output</span>
+                            <span id="exec-time" class="exec-time"></span>
+                        </div>
+                        <div class="console-wrapper">
+                            <pre id="console-output" class="console-log">Output will appear here after clicking "Run Code"...</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- REPL Tab Pane -->
+        <section id="tab-repl" class="tab-content">
+            <div class="repl-container glass-panel">
+                <div class="panel-header">
+                    <div class="repl-title-area">
+                        <span class="panel-title">Interactive Language Shell</span>
+                        <span class="repl-subtitle">Persistent session isolated in memory</span>
+                    </div>
+                    <div class="repl-actions">
+                        <button id="btn-clear-repl" class="btn btn-secondary btn-sm">Clear Terminal</button>
+                        <button id="btn-reset-repl" class="btn btn-secondary btn-sm">Reset Environment</button>
+                    </div>
+                </div>
+                <div class="terminal-wrapper">
+                    <div id="terminal"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- CodeMirror 5 Core JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <!-- CodeMirror JS Syntax Mode -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+    
+    <!-- xterm.js -->
+    <script src="https://cdn.jsdelivr.net/npm/xterm@4.19.0/lib/xterm.min.js"></script>
+
+    <!-- Custom Logic -->
+    <script src="js/app.js"></script>
+    <script src="js/ide.js"></script>
+    <script src="js/repl.js"></script>
+</body>
+</html>

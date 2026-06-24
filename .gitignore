@@ -1,0 +1,31 @@
+# Maven build output
+target/
+*.class
+*.jar
+*.war
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Env / secrets
+.env
+*.pem
+*.key
+
+# Misc
+*.swp
+*~
+
+# Local build tools
+maven/
